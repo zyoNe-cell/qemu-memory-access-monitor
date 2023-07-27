@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/QemuMacDrivers" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/SLOF" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2/ArmPkg/Library/ArmSoftFloatLib/berkeley-softfloat-3" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2/BaseTools/Source/C/BrotliCompress/brotli" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2/CryptoPkg/Library/OpensslLib/openssl" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2/CryptoPkg/Library/OpensslLib/openssl/boringssl" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2/CryptoPkg/Library/OpensslLib/openssl/krb5" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2/CryptoPkg/Library/OpensslLib/openssl/pyca-cryptography" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2/CryptoPkg/Library/OpensslLib/openssl/wycheproof" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2/MdeModulePkg/Universal/RegularExpressionDxe/oniguruma" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2/RedfishPkg/Library/JsonLib/jansson" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2/UnitTestFrameworkPkg/Library/CmockaLib/cmocka" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/edk2/UnitTestFrameworkPkg/Library/GoogleTestLib/googletest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/ipxe" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/openbios" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/opensbi" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/qboot" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/qemu-palcode" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/seabios" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/seabios-hppa" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/skiboot" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/u-boot" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/u-boot-sam460ex" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/roms/vbootrom" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tests/lcitool/libvirt-ci" vcs="Git" />
+  </component>
+</project>
