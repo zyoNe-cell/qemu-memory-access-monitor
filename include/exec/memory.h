@@ -1081,7 +1081,7 @@ struct MemoryListener {
  */
 struct AddressSpace {
     /* private: */
-    struct rcu_head rcu;
+    struct rcu_head rcu;    //Read copy update
     char *name;
     MemoryRegion *root;
 

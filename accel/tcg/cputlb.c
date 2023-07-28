@@ -1873,14 +1873,14 @@ static void mmu_watch_or_dirty(CPUArchState *env, MMULookupPageData *data,
  * bytes.  Return true if the lookup crosses a page boundary.
  */
 static bool mmu_lookup(CPUArchState *env, vaddr addr, MemOpIdx oi,
-                       uintptr_t ra, MMUAccessType type, MMULookupLocals *l)
+                       uintptr_t ra, MMUAccessType type, MMULookupLocals *l)              //
 {
     unsigned a_bits;
     bool crosspage;
     int flags;
 
     l->memop = get_memop(oi);
-    l->mmu_idx = get_mmuidx(oi);
+    l->mmu_idx = get_mmuidx(oi);    //Is the MMU_idx has any substaion impact?
 
     tcg_debug_assert(l->mmu_idx < NB_MMU_MODES);
 
@@ -1890,7 +1890,7 @@ static bool mmu_lookup(CPUArchState *env, vaddr addr, MemOpIdx oi,
         cpu_unaligned_access(env_cpu(env), addr, type, l->mmu_idx, ra);
     }
 
-    l->page[0].addr = addr;
+    l->page[0].addr = addr;     //Lookup Page
     l->page[0].size = memop_size(l->memop);
     l->page[1].addr = (addr + l->page[0].size - 1) & TARGET_PAGE_MASK;
     l->page[1].size = 0;

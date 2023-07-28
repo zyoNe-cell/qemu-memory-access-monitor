@@ -560,7 +560,7 @@ void main_loop_poll_remove_notifier(Notifier *notify)
     notifier_remove(notify);
 }
 
-void main_loop_wait(int nonblocking)
+void main_loop_wait(int nonblocking) //The core of QEMU is event driven, even though it is hybirded with Parallel Architecture
 {
     MainLoopPoll mlpoll = {
         .state = MAIN_LOOP_POLL_FILL,

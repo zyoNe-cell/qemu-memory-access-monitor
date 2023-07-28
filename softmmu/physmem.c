@@ -87,7 +87,7 @@
  */
 RAMList ram_list = { .blocks = QLIST_HEAD_INITIALIZER(ram_list.blocks) };
 
-static MemoryRegion *system_memory;
+static MemoryRegion *system_memory;     //Static
 static MemoryRegion *system_io;
 
 AddressSpace address_space_io;
@@ -2502,9 +2502,9 @@ static void tcg_commit(MemoryListener *listener)
 
 static void memory_map_init(void)
 {
-    system_memory = g_malloc(sizeof(*system_memory));
+    system_memory = g_malloc(sizeof(*system_memory));//Interface of Memmory Allocation System Call from Glib
 
-    memory_region_init(system_memory, NULL, "system", UINT64_MAX);
+    memory_region_init(system_memory, NULL, "system", UINT64_MAX);               //开始没有Owner 但有Name. 第三个参数为Size,应该是64位可寻址空间的大小
     address_space_init(&address_space_memory, system_memory, "memory");
 
     system_io = g_malloc(sizeof(*system_io));
@@ -3057,7 +3057,7 @@ flatview_extend_translation(FlatView *fv, hwaddr addr,
  * Use cpu_register_map_client() to know when retrying the map operation is
  * likely to succeed.
  */
-void *address_space_map(AddressSpace *as,
+void *address_space_map(AddressSpace *as,       //應該是guest OS的地址空間
                         hwaddr addr,
                         hwaddr *plen,
                         bool is_write,

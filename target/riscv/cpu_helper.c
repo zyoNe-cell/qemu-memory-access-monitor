@@ -1268,7 +1268,7 @@ bool riscv_cpu_tlb_fill(CPUState *cs, vaddr address, int size,
                   __func__, address, access_type, mmu_idx);
 
     pmu_tlb_fill_incr_ctr(cpu, access_type);
-    if (two_stage_lookup) {
+    if (two_stage_lookup) {     //Looking up meaning page walk after TLB misss
         /* Two stage lookup */
         ret = get_physical_address(env, &pa, &prot, address,
                                    &env->guest_phys_fault_addr, access_type,
@@ -1285,7 +1285,7 @@ bool riscv_cpu_tlb_fill(CPUState *cs, vaddr address, int size,
         }
 
         qemu_log_mask(CPU_LOG_MMU,
-                      "%s 1st-stage address=%" VADDR_PRIx " ret %d physical "
+                      "%s 1st-stage address=%" VADDR_PRIx " ret %d physical "       // VADDR_PRIx 是指明输出类型， %d %s or ..
                       HWADDR_FMT_plx " prot %d\n",
                       __func__, address, ret, pa, prot);
 
@@ -1329,19 +1329,19 @@ bool riscv_cpu_tlb_fill(CPUState *cs, vaddr address, int size,
                                                (TARGET_PAGE_SIZE - 1))) >> 2;
             }
         }
-    } else {
+    } else {        //没执行
         /* Single stage lookup */
         ret = get_physical_address(env, &pa, &prot, address, NULL,
                                    access_type, mmu_idx, true, false, false);
 
         qemu_log_mask(CPU_LOG_MMU,
-                      "%s address=%" VADDR_PRIx " ret %d physical "
+                      "%s ,Try the find the GPA of GUest virtual address=%" VADDR_PRIx " ret %d (1:Fail to find the PTE) physical "
                       HWADDR_FMT_plx " prot %d\n",
                       __func__, address, ret, pa, prot);
 
         if (ret == TRANSLATE_SUCCESS) {
-            ret = get_physical_address_pmp(env, &prot_pmp, pa,
-                                           size, access_type, mode);
+           // ret = get_physical_address_pmp(env, &prot_pmp, pa,
+                                          // size, access_type, mode);
             tlb_size = pmp_get_tlb_size(env, pa);
 
             qemu_log_mask(CPU_LOG_MMU,
@@ -1367,7 +1367,7 @@ bool riscv_cpu_tlb_fill(CPUState *cs, vaddr address, int size,
         raise_mmu_exception(env, address, access_type, pmp_violation,
                             first_stage_error, two_stage_lookup,
                             two_stage_indirect_error);
-        cpu_loop_exit_restore(cs, retaddr);
+        cpu_loop_exit_restore(cs, retaddr);// failed page
     }
 
     return true;

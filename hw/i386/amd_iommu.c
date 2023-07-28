@@ -54,7 +54,7 @@ const char *amdvi_mmio_high[] = {
     "AMDVI_MMIO_PPR_TAIL",
     "UNHANDLED"
 };
-
+//AMDVI AMD 的一个IOMMU虚拟技术
 struct AMDVIAddressSpace {
     uint8_t bus_num;            /* bus number                           */
     uint8_t devfn;              /* device function                      */

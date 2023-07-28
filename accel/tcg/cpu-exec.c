@@ -299,7 +299,7 @@ static void log_cpu_exec(vaddr pc, CPUState *cpu,
         qemu_log_mask(CPU_LOG_EXEC,
                       "Trace %d: %p [%08" PRIx64
                       "/%016" VADDR_PRIx "/%08x/%08x] %s\n",
-                      cpu->cpu_index, tb->tc.ptr, tb->cs_base, pc,
+                      cpu->cpu_index, tb->tc.ptr, tb->cs_base, pc,          //tc.ptr: pointing to the translated code. tc field is set for conviniences.
                       tb->flags, tb->cflags, lookup_symbol(pc));
 
         if (qemu_loglevel_mask(CPU_LOG_TB_CPU)) {
