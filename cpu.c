@@ -234,8 +234,7 @@ static void cpu_set_start_powered_off(Object *obj, bool value, Error **errp)
 void cpu_class_init_props(DeviceClass *dc)
 {
     ObjectClass *oc = OBJECT_CLASS(dc);
-    qemu_vprintf("vprint:    \n");
-    qemu_printf("printf: \n");
+
 
     device_class_set_props(dc, cpu_common_props);
     /*
@@ -431,7 +430,6 @@ bool target_words_bigendian(void)
 
 const char *target_name(void)
 {
-    qemu_printf("The target name is %s\n",TARGET_NAME);
     return TARGET_NAME;
 }
 

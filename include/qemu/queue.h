@@ -384,7 +384,7 @@ struct {                                                                \
 
 typedef struct QTailQLink {
     void *tql_next;
-    struct QTailQLink *tql_prev;
+    struct QTailQLink *tql_prev;        //tql: tail quene link;     tqh: tail queue head     tqe: tail queue element
 } QTailQLink;
 
 /*

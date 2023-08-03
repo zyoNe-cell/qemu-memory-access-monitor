@@ -16,11 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-
+//"target/i386/tcg/sysemu/execp_helper.h"
 #include "qemu/osdep.h"
 #include "cpu.h"
 #include "exec/exec-all.h"
 #include "tcg/helper-tcg.h"
+
+
 
 typedef struct TranslateParams {
     target_ulong addr;
@@ -57,6 +59,7 @@ typedef struct PTETranslate {
     void *haddr;
     hwaddr gaddr;
 } PTETranslate;
+
 
 static bool ptw_translate(PTETranslate *inout, hwaddr addr)
 {
@@ -466,6 +469,7 @@ do_check_protect_pse36:
     out->paddr = paddr;
     out->prot = prot;
     out->page_size = page_size;
+    //qemu_log_mask(CPU_LOG_MMU,"Memory Access:[GVA:<<%p>> -> GPA:<<%p>>  Access_type()]\n",(void *)addr,(void *)out.paddr);
     return true;
 
  do_fault_rsvd:
@@ -526,7 +530,7 @@ static G_NORETURN void raise_stage2(CPUX86State *env, TranslateFault *err,
     cpu_vmexit(env, SVM_EXIT_NPF, exit_info_1, retaddr);
 }
 
-static bool get_physical_address(CPUX86State *env, vaddr addr,
+bool get_physical_address(CPUX86State *env, vaddr addr,
                                  MMUAccessType access_type, int mmu_idx,
                                  TranslateResult *out, TranslateFault *err)
 {
@@ -574,7 +578,8 @@ static bool get_physical_address(CPUX86State *env, vaddr addr,
                     return false;
                 }
             }
-            return mmu_translate(env, &in, out, err);
+
+            return mmu_translate(env, &in, out, err);       //return virtual physical
         }
         break;
     }
@@ -641,3 +646,6 @@ G_NORETURN void x86_cpu_do_unaligned_access(CPUState *cs, vaddr vaddr,
     X86CPU *cpu = X86_CPU(cs);
     handle_unaligned_access(&cpu->env, vaddr, access_type, retaddr);
 }
+
+
+#define GETPHY(a,b,c,d,e,f) get_physical_address(a, b , c, d, e, f)

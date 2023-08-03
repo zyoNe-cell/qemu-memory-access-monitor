@@ -26,13 +26,13 @@ static void memory_mapping_list_add_mapping_sorted(MemoryMappingList *list,
 {
     MemoryMapping *p;
 
-    QTAILQ_FOREACH(p, &list->head, next) {
+    QTAILQ_FOREACH(p, &list->head, next) {          //QTAILQ_FOEACH: tranverse the list;
         if (p->phys_addr >= mapping->phys_addr) {
-            QTAILQ_INSERT_BEFORE(p, mapping, next);
+            QTAILQ_INSERT_BEFORE(p, mapping, next);         //Insert the mapping_element into the p element before;
             return;
         }
     }
-    QTAILQ_INSERT_TAIL(&list->head, mapping, next);
+    QTAILQ_INSERT_TAIL(&list->head, mapping, next); //adds to the end
 }
 
 static void create_new_memory_mapping(MemoryMappingList *list,

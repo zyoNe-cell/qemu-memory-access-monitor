@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-
+//#include "tcg/sysemu/excp_helper.c"
 #include "qemu/osdep.h"
 #include "qemu/main-loop.h"
 #include "hw/core/tcg-cpu-ops.h"
@@ -42,6 +42,9 @@
 #include "tcg/tcg-ldst.h"
 #include "tcg/oversized-guest.h"
 
+
+u_long access_times = 0;
+
 /* DEBUG defines, enable DEBUG_TLB_LOG to log to the CPU_LOG_MMU target */
 /* #define DEBUG_TLB */
 /* #define DEBUG_TLB_LOG */
@@ -57,6 +60,32 @@
 # define DEBUG_TLB_GATE 0
 # define DEBUG_TLB_LOG_GATE 0
 #endif
+//Bad codes, but I didn't figure out how to solve the dependency issue.  change the compiling process should able fix this bad code style
+
+typedef struct TranslateResult {
+    hwaddr paddr;
+    int prot;
+    int page_size;
+} TranslateResult;
+
+typedef enum TranslateFaultStage2 {
+    S2_NONE,
+    S2_GPA,
+    S2_GPT,
+} TranslateFaultStage2;
+
+typedef struct TranslateFault {
+    int exception_index;
+    int error_code;
+    target_ulong cr2;
+    TranslateFaultStage2 stage2;
+} TranslateFault;
+
+// Bad codes.
+
+//bool get_physical_address(CPUX86State *env, vaddr addr,
+//                          MMUAccessType access_type, int mmu_idx,
+//                          TranslateResult *out, TranslateFault *err);
 
 #define tlb_debug(fmt, ...) do { \
     if (DEBUG_TLB_LOG_GATE) { \
@@ -1509,19 +1538,43 @@ static void notdirty_write(CPUState *cpu, vaddr mem_vaddr, unsigned size,
     }
 }
 
-static int probe_access_internal(CPUArchState *env, vaddr addr,
-                                 int fault_size, MMUAccessType access_type,
+static int probe_access_internal(CPUArchState *env, vaddr addr,         //I am no sure the VA is GVA or PVA now
+                                 int fault_size, MMUAccessType access_type,     //access_type很重要
                                  int mmu_idx, bool nonfault,
                                  void **phost, CPUTLBEntryFull **pfull,
                                  uintptr_t retaddr, bool check_mem_cbs)
 {
+
+    //** Logging the GVA and GPAaccess to
+
+    TranslateResult memoryAccessGPA;
+    TranslateFault empty;   //Not being used for now.
+//    get_physical_address(env,addr,access_type,mmu_idx,&memoryAccessGPA,&empty);
+
+    access_times++;
+
+        if(access_times > 9999999){
+            if(addr != memoryAccessGPA.paddr){
+                qemu_log_mask(CPU_LOG_MMU,"accessing tiems: <<%lu>>\n",access_times);
+                qemu_log_mask(CPU_LOG_MMU,"The memory Access of ----Guest Virtual Address<<%llu>>  -> Guest Physical Address<<%llu>>\n ",addr, memoryAccessGPA.paddr);
+            }
+ }
+
+
+    //判断是不是真的
+
+    //** Need to add some checkings if the recording addresss are real, and don't have effects on executing
+    //
     uintptr_t index = tlb_index(env, mmu_idx, addr);
+
+
     CPUTLBEntry *entry = tlb_entry(env, mmu_idx, addr);
+
     uint64_t tlb_addr = tlb_read_idx(entry, access_type);
     vaddr page_addr = addr & TARGET_PAGE_MASK;
     int flags = TLB_FLAGS_MASK & ~TLB_FORCE_SLOW;
     bool force_mmio = check_mem_cbs && cpu_plugin_mem_cbs_enabled(env_cpu(env));
-    CPUTLBEntryFull *full;
+    CPUTLBEntryFull *full;          //record the GVA of page
 
     if (!tlb_hit_page(tlb_addr, page_addr)) {
         if (!victim_tlb_hit(env, mmu_idx, index, access_type, page_addr)) {
@@ -1548,6 +1601,8 @@ static int probe_access_internal(CPUArchState *env, vaddr addr,
         }
         tlb_addr = tlb_read_idx(entry, access_type);
     }
+
+
     flags &= tlb_addr;
 
     *pfull = full = &env_tlb(env)->d[mmu_idx].fulltlb[index];
@@ -1563,6 +1618,7 @@ static int probe_access_internal(CPUArchState *env, vaddr addr,
 
     /* Everything else is RAM. */
     *phost = (void *)((uintptr_t)addr + entry->addend);
+   // qemu_log_mask("final physical address get: <<%p>>\n",(void *)**phost);
     return flags;
 }
 
@@ -1662,6 +1718,7 @@ void *probe_access(CPUArchState *env, vaddr addr, int size,
     return host;
 }
 
+//Not used in X86,
 void *tlb_vaddr_to_host(CPUArchState *env, abi_ptr addr,
                         MMUAccessType access_type, int mmu_idx)
 {

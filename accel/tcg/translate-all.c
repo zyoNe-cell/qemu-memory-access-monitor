@@ -299,7 +299,11 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
     assert_memory_lock();
     qemu_thread_jit_write();
 
-    phys_pc = get_page_addr_code_hostp(env, pc, &host_pc);
+    phys_pc = get_page_addr_code_hostp(env, pc, &host_pc);  //a ram_addr_t for the virtual address for execution
+    //A single block of contiguous RAM is allocated with 'qemu_ram_alloc()'(the lowest level function for this allocation in the QEMU is qemu_get_ram_block, and I
+    // have no idea on the function qemu_get_ram_block), which
+    //takes a size in bytes, and allocates the pages through mmap() in the QEMU
+    //host process.
 
     if (phys_pc == -1) {
         /* Generate a one-shot TB with 1 insn in it */

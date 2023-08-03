@@ -41,8 +41,8 @@ typedef struct GuestPhysBlockList {
 
 /* The physical and virtual address in the memory mapping are contiguous. */
 typedef struct MemoryMapping {
-    hwaddr phys_addr;
-    vaddr virt_addr;
+    hwaddr phys_addr;       //Must be GPA
+    vaddr virt_addr;        //Could be HVA              or GVA
     ram_addr_t length;
     QTAILQ_ENTRY(MemoryMapping) next;
 } MemoryMapping;

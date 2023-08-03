@@ -128,7 +128,7 @@ void cpu_x86_update_cr0(CPUX86State *env, uint32_t new_cr0)
     X86CPU *cpu = env_archcpu(env);
     int pe_state;
 
-    qemu_log_mask(CPU_LOG_MMU, "CR0 update: CR0=0x%08x\n", new_cr0);
+    //qemu_log_mask(CPU_LOG_MMU, "CR0 update: CR0=0x%08x\n", new_cr0);
     if ((new_cr0 & (CR0_PG_MASK | CR0_WP_MASK | CR0_PE_MASK)) !=
         (env->cr[0] & (CR0_PG_MASK | CR0_WP_MASK | CR0_PE_MASK))) {
         tlb_flush(CPU(cpu));

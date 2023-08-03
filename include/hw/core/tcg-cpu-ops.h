@@ -172,7 +172,13 @@ struct TCGCPUOps {
                                        const TranslationBlock *tb);
 #endif /* !CONFIG_USER_ONLY */
 #endif /* NEED_CPU_H */
+    //Added for monitoring memory access
+#ifdef TARGET_I386
+  // bool (*get_physical_address)(CPUArchState *env, vaddr addr,
+  //                                    MMUAccessType access_type, int mmu_idx,
+ //                                       TranslateResult *out, TranslateFault *err);
 
+#endif
 };
 
 #if defined(CONFIG_USER_ONLY)

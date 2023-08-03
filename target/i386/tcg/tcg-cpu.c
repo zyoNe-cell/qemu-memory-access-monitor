@@ -104,6 +104,7 @@ static const struct TCGCPUOps x86_tcg_ops = {
     .do_unaligned_access = x86_cpu_do_unaligned_access,
     .debug_excp_handler = breakpoint_handler,
     .debug_check_breakpoint = x86_debug_check_breakpoint,
+  //  .get_physical_address= get_physical_address,
 #endif /* !CONFIG_USER_ONLY */
 };
 

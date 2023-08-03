@@ -28,6 +28,10 @@
     <mapping directory="$PROJECT_DIR$/roms/u-boot" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/roms/u-boot-sam460ex" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/roms/vbootrom" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subprojects/berkeley-softfloat-3" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subprojects/berkeley-testfloat-3" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subprojects/dtc" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/subprojects/keycodemapdb" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/tests/lcitool/libvirt-ci" vcs="Git" />
   </component>
 </project>
