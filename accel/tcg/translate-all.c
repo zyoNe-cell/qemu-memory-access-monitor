@@ -305,9 +305,15 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
     //takes a size in bytes, and allocates the pages through mmap() in the QEMU
     //host process.
 
+
     if (phys_pc == -1) {
         /* Generate a one-shot TB with 1 insn in it */
         cflags = (cflags & ~CF_COUNT_MASK) | CF_LAST_IO | 1;
+    }
+    else //No 100% comfirm
+        {
+        qemu_log_mask(CPU_LOG_MMU,"The Address of "
+                                  "instruction which get executed next:( GVA:<<%lld>> -->   GPA:<<%lld>> )\n",pc,host_pc);      //hate multiple pointer
     }
 
     max_insns = cflags & CF_COUNT_MASK;
@@ -316,7 +322,7 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
     }
     QEMU_BUILD_BUG_ON(CF_COUNT_MASK + 1 != TCG_MAX_INSNS);
 
- buffer_overflow:
+ buffer_overflow:                   //诡异的indrictives;
     assert_no_pages_locked();
     tb = tcg_tb_alloc(tcg_ctx);
     if (unlikely(!tb)) {

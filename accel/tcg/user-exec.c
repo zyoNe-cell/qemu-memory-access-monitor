@@ -779,19 +779,19 @@ static int probe_access_internal(CPUArchState *env, vaddr addr,
 
     switch (access_type) {
     case MMU_DATA_STORE:
-        acc_flag = PAGE_WRITE_ORG;
+        acc_flag = PAGE_WRITE_ORG;  //0b010
         break;
     case MMU_DATA_LOAD:
-        acc_flag = PAGE_READ;
+        acc_flag = PAGE_READ;       //0b001
         break;
     case MMU_INST_FETCH:
-        acc_flag = PAGE_EXEC;
+        acc_flag = PAGE_EXEC;       //0b100
         break;
     default:
         g_assert_not_reached();
     }
 
-    if (guest_addr_valid_untagged(addr)) {
+    if (guest_addr_valid_untagged(addr)) {          //Access control
         int page_flags = page_get_flags(addr);
         if (page_flags & acc_flag) {
             if ((acc_flag == PAGE_READ || acc_flag == PAGE_WRITE)

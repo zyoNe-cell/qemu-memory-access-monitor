@@ -60,32 +60,7 @@ u_long access_times = 0;
 # define DEBUG_TLB_GATE 0
 # define DEBUG_TLB_LOG_GATE 0
 #endif
-//Bad codes, but I didn't figure out how to solve the dependency issue.  change the compiling process should able fix this bad code style
 
-typedef struct TranslateResult {
-    hwaddr paddr;
-    int prot;
-    int page_size;
-} TranslateResult;
-
-typedef enum TranslateFaultStage2 {
-    S2_NONE,
-    S2_GPA,
-    S2_GPT,
-} TranslateFaultStage2;
-
-typedef struct TranslateFault {
-    int exception_index;
-    int error_code;
-    target_ulong cr2;
-    TranslateFaultStage2 stage2;
-} TranslateFault;
-
-// Bad codes.
-
-//bool get_physical_address(CPUX86State *env, vaddr addr,
-//                          MMUAccessType access_type, int mmu_idx,
-//                          TranslateResult *out, TranslateFault *err);
 
 #define tlb_debug(fmt, ...) do { \
     if (DEBUG_TLB_LOG_GATE) { \
@@ -1537,34 +1512,18 @@ static void notdirty_write(CPUState *cpu, vaddr mem_vaddr, unsigned size,
         tlb_set_dirty(cpu, mem_vaddr);
     }
 }
+//In access with access type of fetch, those "comparing" is not recored
+static int if_real_insfetch(){
+
+
+}
 
 static int probe_access_internal(CPUArchState *env, vaddr addr,         //I am no sure the VA is GVA or PVA now
-                                 int fault_size, MMUAccessType access_type,     //access_type很重要
+                                 int fault_size, MMUAccessType access_type,     //
                                  int mmu_idx, bool nonfault,
                                  void **phost, CPUTLBEntryFull **pfull,
                                  uintptr_t retaddr, bool check_mem_cbs)
 {
-
-    //** Logging the GVA and GPAaccess to
-
-    TranslateResult memoryAccessGPA;
-    TranslateFault empty;   //Not being used for now.
-//    get_physical_address(env,addr,access_type,mmu_idx,&memoryAccessGPA,&empty);
-
-    access_times++;
-
-        if(access_times > 9999999){
-            if(addr != memoryAccessGPA.paddr){
-                qemu_log_mask(CPU_LOG_MMU,"accessing tiems: <<%lu>>\n",access_times);
-                qemu_log_mask(CPU_LOG_MMU,"The memory Access of ----Guest Virtual Address<<%llu>>  -> Guest Physical Address<<%llu>>\n ",addr, memoryAccessGPA.paddr);
-            }
- }
-
-
-    //判断是不是真的
-
-    //** Need to add some checkings if the recording addresss are real, and don't have effects on executing
-    //
     uintptr_t index = tlb_index(env, mmu_idx, addr);
 
 
@@ -1618,7 +1577,6 @@ static int probe_access_internal(CPUArchState *env, vaddr addr,         //I am n
 
     /* Everything else is RAM. */
     *phost = (void *)((uintptr_t)addr + entry->addend);
-   // qemu_log_mask("final physical address get: <<%p>>\n",(void *)**phost);
     return flags;
 }
 
@@ -1718,7 +1676,7 @@ void *probe_access(CPUArchState *env, vaddr addr, int size,
     return host;
 }
 
-//Not used in X86,
+
 void *tlb_vaddr_to_host(CPUArchState *env, abi_ptr addr,
                         MMUAccessType access_type, int mmu_idx)
 {
@@ -1751,7 +1709,7 @@ tb_page_addr_t get_page_addr_code_hostp(CPUArchState *env, vaddr addr,
 
     (void)probe_access_internal(env, addr, 1, MMU_INST_FETCH,
                                 cpu_mmu_index(env, true), false,
-                                &p, &full, 0, false);
+                                &p, &full, 0, false);//get the GPA
     if (p == NULL) {
         return -1;
     }
@@ -1763,7 +1721,7 @@ tb_page_addr_t get_page_addr_code_hostp(CPUArchState *env, vaddr addr,
     if (hostp) {
         *hostp = p;
     }
-    return qemu_ram_addr_from_host_nofail(p);
+    return qemu_ram_addr_from_host_nofail(p);   //Return HVA address (in software emulation)
 }
 
 /* Load/store with atomicity primitives. */
@@ -3142,7 +3100,7 @@ void cpu_st16_mmu(CPUArchState *env, target_ulong addr, Int128 val,
  */
 
 #define ATOMIC_NAME(X) \
-    glue(glue(glue(cpu_atomic_ ## X, SUFFIX), END), _mmu)
+    glue(glue(glue(cpu_atomic_ ## X, SUFFIX), END), _mmu)           //Construct a new token cpu_atomic_GIVENNAMEbyX_end_mmu
 
 #define ATOMIC_MMU_CLEANUP
 

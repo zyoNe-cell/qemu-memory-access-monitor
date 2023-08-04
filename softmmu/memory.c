@@ -511,7 +511,7 @@ static MemTxResult memory_region_write_with_attrs_accessor(MemoryRegion *mr,
         trace_memory_region_ops_write(get_cpu_index(), mr, abs_addr, tmp, size,
                                       memory_region_name(mr));
     }
-    return mr->ops->write_with_attrs(mr->opaque, addr, tmp, size, attrs);
+    return mr->ops->write_with_attrs(mr->opaque, addr, tmp, size, attrs);   //不懂先不管
 }
 
 static MemTxResult access_with_adjusted_size(hwaddr addr,
@@ -1464,16 +1464,18 @@ MemTxResult memory_region_dispatch_read(MemoryRegion *mr,
     MemTxResult r;
 
     if (mr->alias) {
+        qemu_log_mask(CPU_LOG_MMU, "Guest trying to read the data from GPA:<<%lld>>\n",addr);
         return memory_region_dispatch_read(mr->alias,
                                            mr->alias_offset + addr,
                                            pval, op, attrs);
     }
     if (!memory_region_access_valid(mr, addr, size, false, attrs)) {
+        qemu_log_mask(CPU_LOG_MMU, "Guest trying to read the data from GPA:<<%lld>>\n",addr);
         *pval = unassigned_mem_read(mr, addr, size);
         return MEMTX_DECODE_ERROR;
     }
 
-    r = memory_region_dispatch_read1(mr, addr, pval, size, attrs);
+    r = memory_region_dispatch_read1(mr, addr, pval, size, attrs);  //I/O read
     adjust_endianness(mr, pval, op);
     return r;
 }
@@ -1509,7 +1511,7 @@ MemTxResult memory_region_dispatch_write(MemoryRegion *mr,
                                          uint64_t data,
                                          MemOp op,
                                          MemTxAttrs attrs)
-{
+{   //getting GPA from here
     unsigned size = memop_size(op);
 
     if (mr->alias) {
@@ -1525,10 +1527,11 @@ MemTxResult memory_region_dispatch_write(MemoryRegion *mr,
     adjust_endianness(mr, &data, op);
 
     if ((!kvm_eventfds_enabled()) &&
-        memory_region_dispatch_write_eventfds(mr, addr, data, size, attrs)) {
+        memory_region_dispatch_write_eventfds(mr, addr, data, size, attrs)) {       //write to a file
         return MEMTX_OK;
     }
-
+    //
+    qemu_log_mask(CPU_LOG_MMU, "Guest trying to write the data to GPA:<<%lld>>\n",addr);
     if (mr->ops->write) {
         return access_with_adjusted_size(addr, &data, size,
                                          mr->ops->impl.min_access_size,

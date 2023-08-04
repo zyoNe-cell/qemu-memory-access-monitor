@@ -753,7 +753,7 @@ typedef struct MemoryRegionIoeventfd MemoryRegionIoeventfd;
  *
  * A struct representing a memory region.
  */
-struct MemoryRegion {
+struct MemoryRegion {   //MR, 还真不如叫Memory Manager;
     Object parent_obj;
 
     /* private: */
@@ -768,7 +768,7 @@ struct MemoryRegion {
     bool flush_coalesced_mmio;
     uint8_t dirty_log_mask;
     bool is_iommu;
-    RAMBlock *ram_block;
+    RAMBlock *ram_block;            //If mr 申请了内存就指向RAMBlock
     Object *owner;
     /* owner as TYPE_DEVICE. Used for re-entrancy checks in MR access hotpath */
     DeviceState *dev;
@@ -778,7 +778,7 @@ struct MemoryRegion {
     MemoryRegion *container;
     int mapped_via_alias; /* Mapped via an alias, container might be NULL */
     Int128 size;
-    hwaddr addr;
+    hwaddr addr;            //gpa
     void (*destructor)(MemoryRegion *mr);
     uint64_t align;
     bool terminates;

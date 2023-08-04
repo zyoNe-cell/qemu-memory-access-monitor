@@ -177,19 +177,20 @@ struct tb_desc {
     uint32_t cflags;
 };
 
-static bool tb_lookup_cmp(const void *p, const void *d)
+//tb_htable_lookup will call this function, to check if
+static bool tb_lookup_cmp(const void *p, const void *d) //If matched, no need to translate a new TB;
 {
     const TranslationBlock *tb = p;
     const struct tb_desc *desc = d;
 
     if ((tb_cflags(tb) & CF_PCREL || tb->pc == desc->pc) &&
-        tb_page_addr0(tb) == desc->page_addr0 &&
+        tb_page_addr0(tb) == desc->page_addr0 &&                //target page 是 HVA
         tb->cs_base == desc->cs_base &&
         tb->flags == desc->flags &&
-        tb_cflags(tb) == desc->cflags) {
+        tb_cflags(tb) == desc->cflags) {            //If this statement is true, meaning that next code will be executed translated before.
         /* check next page if needed */
         tb_page_addr_t tb_phys_page1 = tb_page_addr1(tb);
-        if (tb_phys_page1 == -1) {
+        if (tb_phys_page1 == -1) {  //
             return true;
         } else {
             tb_page_addr_t phys_page1;
@@ -214,6 +215,7 @@ static bool tb_lookup_cmp(const void *p, const void *d)
     return false;
 }
 
+//TB_
 static TranslationBlock *tb_htable_lookup(CPUState *cpu, vaddr pc,
                                           uint64_t cs_base, uint32_t flags,
                                           uint32_t cflags)
@@ -227,7 +229,7 @@ static TranslationBlock *tb_htable_lookup(CPUState *cpu, vaddr pc,
     desc.flags = flags;
     desc.cflags = cflags;
     desc.pc = pc;
-    phys_pc = get_page_addr_code(desc.env, pc);
+    phys_pc = get_page_addr_code(desc.env, pc);  //Get the HVA
     if (phys_pc == -1) {
         return NULL;
     }
@@ -996,8 +998,8 @@ cpu_exec_loop(CPUState *cpu, SyncClocks *sc)
                 break;
             }
 
-            tb = tb_lookup(cpu, pc, cs_base, flags, cflags);
-            if (tb == NULL) {
+            tb = tb_lookup(cpu, pc, cs_base, flags, cflags);            //The type of pc passed into is GVA
+            if (tb == NULL) {   //If this instruction didn't be translated before, generate a new one for it.
                 CPUJumpCache *jc;
                 uint32_t h;
 
@@ -1020,6 +1022,7 @@ cpu_exec_loop(CPUState *cpu, SyncClocks *sc)
                     qatomic_set(&jc->array[h].tb, tb);
                 }
             }
+            //presudo:   log("Instruction at addresss<<%ull>>be fetched")
 
 #ifndef CONFIG_USER_ONLY
             /*
