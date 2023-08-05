@@ -1462,20 +1462,20 @@ MemTxResult memory_region_dispatch_read(MemoryRegion *mr,
 {
     unsigned size = memop_size(op);
     MemTxResult r;
-
+    qemu_log_mask(CPU_LOG_MMU, "Guest trying to read the data from GPA:<<%llx>>\n",addr);
     if (mr->alias) {
-        qemu_log_mask(CPU_LOG_MMU, "Guest trying to read the data from GPA:<<%lld>>\n",addr);
+
         return memory_region_dispatch_read(mr->alias,
                                            mr->alias_offset + addr,
                                            pval, op, attrs);
     }
     if (!memory_region_access_valid(mr, addr, size, false, attrs)) {
-        qemu_log_mask(CPU_LOG_MMU, "Guest trying to read the data from GPA:<<%lld>>\n",addr);
+        qemu_log_mask(CPU_LOG_MMU, "Guest trying to read the data from GPA:<<0x%llx>>\n",addr);
         *pval = unassigned_mem_read(mr, addr, size);
         return MEMTX_DECODE_ERROR;
     }
 
-    r = memory_region_dispatch_read1(mr, addr, pval, size, attrs);  //I/O read
+    r = memory_region_dispatch_read1(mr, addr, pval, size, attrs);  //
     adjust_endianness(mr, pval, op);
     return r;
 }
@@ -1531,7 +1531,7 @@ MemTxResult memory_region_dispatch_write(MemoryRegion *mr,
         return MEMTX_OK;
     }
     //
-    qemu_log_mask(CPU_LOG_MMU, "Guest trying to write the data to GPA:<<%lld>>\n",addr);
+    qemu_log_mask(CPU_LOG_MMU, "Guest trying to write the data to GPA:<<0x%llx>>\n",addr);
     if (mr->ops->write) {
         return access_with_adjusted_size(addr, &data, size,
                                          mr->ops->impl.min_access_size,
