@@ -312,8 +312,7 @@ TranslationBlock *tb_gen_code(CPUState *cpu,
     }
     else //No 100% comfirm
         {
-        qemu_log_mask(CPU_LOG_MMU,"The Address of "
-                                  "instruction which get executed next:( GVA:<<%lld>> -->   GPA:<<%lld>> )\n",pc,host_pc);      //hate multiple pointer
+        qemu_log_mask(CPU_LOG_MMU,"GPA of instruction executing:<<%llx>> )\n",host_pc);      //GVA:pc GPA:host_pc
     }
 
     max_insns = cflags & CF_COUNT_MASK;
